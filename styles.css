@@ -162,6 +162,42 @@ button {
   gap: 0.7rem;
 }
 
+#menu-dropdown {
+  position: fixed;
+  top: 3.1rem;
+  right: 1.25rem;
+  z-index: 45;
+  background: rgba(15, 23, 42, 0.98);
+  border-radius: 0.9rem;
+  border: 1px solid rgba(55, 65, 81, 0.95);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.9);
+  padding: 0.4rem 0.25rem;
+  min-width: 180px;
+}
+
+.menu-list {
+  list-style: none;
+}
+
+.menu-item-btn {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: #e5e7eb;
+  padding: 0.4rem 0.7rem;
+  font-size: 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 0.6rem;
+  cursor: pointer;
+}
+
+.menu-item-btn:hover {
+  background: rgba(31, 41, 55, 0.9);
+}
+
 .pill-btn {
   border-radius: var(--radius-pill);
   border: 1px solid rgba(148, 163, 184, 0.4);

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orders – NovaCommerce</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <main class="app-container">
+      <header class="panel-header">
+        <div>
+          <div class="section-title">Orders overview</div>
+          <div class="section-subtitle">All orders stored in this browser.</div>
+        </div>
+        <a href="shop.html" class="nav-link">← Back to shop</a>
+      </header>
+      <section class="panel">
+        <div id="orders-view"></div>
+      </section>
+    </main>
+  </div>
+  <script>
+    const ORDERS_KEY='ecom_orders';
+    function formatPrice(v){return '$'+v.toFixed(2);}    
+    function getOrders(){try{const r=localStorage.getItem(ORDERS_KEY);return r?JSON.parse(r):[]}catch{return []}}    
+    function statusClass(s){const m={Pending:'status-pending',Processing:'status-processing',Shipped:'status-shipped',Delivered:'status-delivered',Canceled:'status-canceled'};return m[s]||'status-pending';}
+    function render(){
+      const root=document.getElementById('orders-view');
+      const orders=getOrders();
+      if(!orders.length){root.innerHTML='<p class="text-muted">No orders yet.</p>';return;}
+      root.innerHTML=orders.map(o=>{
+        const d=new Date(o.createdAt).toLocaleString();
+        const itemsLabel=`${o.items.length} item${o.items.length>1?'s':''}`;
+        return `<article class="order-card">
+          <div class="order-header">
+            <div><div style="font-size:0.78rem;">${o.id}</div><div class="text-muted" style="font-size:0.72rem;">${d}</div></div>
+            <span class="status-pill ${statusClass(o.status)}">${o.status}</span>
+          </div>
+          <div class="order-body">
+            <div class="cart-row"><span>${itemsLabel}</span><span>${formatPrice(o.total)}</span></div>
+          </div>
+        </article>`;
+      }).join('');
+    }
+    document.addEventListener('DOMContentLoaded',render);
+  </script>
+</body>
+</html>

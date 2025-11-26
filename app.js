@@ -993,17 +993,19 @@ function wireCatalogEvents() {
     addToCart(addBtn.getAttribute('data-add'));
   });
 
-  searchInput.addEventListener('input', () => renderCatalog());
-  maxPriceInput.addEventListener('input', () => renderCatalog());
+  if (searchInput) searchInput.addEventListener('input', () => renderCatalog());
+  if (maxPriceInput) maxPriceInput.addEventListener('input', () => renderCatalog());
 
-  heroShopBtn.addEventListener('click', () => scrollToSection('catalog'));
-  heroOffersBtn.addEventListener('click', () => scrollToSection('offers'));
-  viewOrdersBtn.addEventListener('click', () => scrollToSection('orders'));
+  if (heroShopBtn) heroShopBtn.addEventListener('click', () => scrollToSection('catalog'));
+  if (heroOffersBtn) heroOffersBtn.addEventListener('click', () => scrollToSection('offers'));
+  if (viewOrdersBtn) viewOrdersBtn.addEventListener('click', () => scrollToSection('orders'));
 
-  cartToggleBtn.addEventListener('click', () => {
-    scrollToSection('orders');
-    setCheckoutStep('cart');
-  });
+  if (cartToggleBtn) {
+    cartToggleBtn.addEventListener('click', () => {
+      scrollToSection('orders');
+      setCheckoutStep('cart');
+    });
+  }
 
   checkoutStepsRoot.addEventListener('click', (e) => {
     const pill = e.target.closest('.step-pill');

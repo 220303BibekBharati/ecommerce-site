@@ -22,22 +22,11 @@
         <nav class="nav-links">
           <a href="#catalog" class="nav-link active">Shop</a>
           <a href="#offers" class="nav-link">Offers</a>
-          <a href="#orders" class="nav-link">Orders</a>
         </nav>
 
         <div class="nav-actions">
-          <button type="button" class="pill-btn" id="view-orders-btn">
-            <span class="badge-dot"></span>
-            <span>Order history</span>
-          </button>
-          <button type="button" class="pill-btn" id="account-btn">
-            <span id="account-label">Sign in</span>
-          </button>
-          <button type="button" class="pill-btn pill-btn-primary" id="cart-toggle-btn">
-            <span class="cart-indicator">
-              <span>Cart</span>
-              <span class="cart-count" id="cart-count">0</span>
-            </span>
+          <button type="button" class="pill-btn" id="menu-btn" aria-label="Menu">
+            &#9776;
           </button>
         </div>
       </div>
@@ -206,10 +195,47 @@
   <!-- Auth Modal -->
   <div id="auth-modal-root" style="display:none;"></div>
 
+  <!-- Header Menu Dropdown -->
+  <div id="menu-dropdown" style="display:none;">
+    <ul class="menu-list">
+      <li><a href="cart.html" class="menu-item-btn">My Cart<span>🛒</span></a></li>
+      <li><a href="my-orders.html" class="menu-item-btn">My Orders<span>📦</span></a></li>
+      <li><a href="orders.html" class="menu-item-btn">Orders<span>📋</span></a></li>
+      <li><button type="button" class="menu-item-btn" id="menu-logout-btn">Sign out<span>↪</span></button></li>
+    </ul>
+  </div>
+
   <!-- Toasts -->
   <div class="toast-container" id="toast-container"></div>
 
   <script src="app.js"></script>
+  <script>
+    // Simple burger toggle independent of app.js
+    document.addEventListener('DOMContentLoaded', function () {
+      var btn = document.getElementById('menu-btn');
+      var dd = document.getElementById('menu-dropdown');
+      if (!btn || !dd) return;
+      var open = false;
+      function setState(show) {
+        open = show;
+        dd.style.display = show ? 'block' : 'none';
+      }
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        setState(!open);
+      });
+      document.addEventListener('click', function (e) {
+        if (!dd.contains(e.target) && e.target !== btn) setState(false);
+      });
+      var logoutBtn = document.getElementById('menu-logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+          try { localStorage.removeItem('currentUser'); } catch (e) {}
+          setState(false);
+        });
+      }
+    });
+  </script>
 </body>
 </html>
 

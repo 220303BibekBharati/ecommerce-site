@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Cart – NovaCommerce</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <main class="app-container">
+      <header class="panel-header">
+        <div>
+          <div class="section-title">My Cart</div>
+          <div class="section-subtitle">Items currently in your cart.</div>
+        </div>
+        <a href="shop.html" class="nav-link">← Back to shop</a>
+      </header>
+      <section class="panel">
+        <div id="cart-view"></div>
+      </section>
+    </main>
+  </div>
+  <script>
+    const CART_KEY = 'ecom_cart';
+    const PRODUCT_KEY = 'ecom_products';
+    function formatPrice(v){return '$' + v.toFixed(2);}    
+    function getCart(){try{const r=localStorage.getItem(CART_KEY);return r?JSON.parse(r):[]}catch{return []}}    
+    function getProducts(){try{const r=localStorage.getItem(PRODUCT_KEY);return r?JSON.parse(r):[]}catch{return []}}    
+    function render(){
+      const root=document.getElementById('cart-view');
+      const cart=getCart();
+      const products=getProducts();
+      if(!cart.length){root.innerHTML='<p class="text-muted">Your cart is empty.</p>';return;}
+      let subtotal=0;
+      const lines=cart.map(item=>{
+        const p=products.find(pr=>pr.id===item.productId);
+        if(!p)return '';
+        const total=p.price*item.qty;subtotal+=total;
+        return `<div class="cart-row"><span>${item.qty} × ${p.name}</span><span>${formatPrice(total)}</span></div>`;
+      }).join('');
+      root.innerHTML=`
+        <div class="cart-summary">
+          ${lines}
+          <div class="cart-row cart-total"><span>Subtotal</span><span>${formatPrice(subtotal)}</span></div>
+        </div>`;
+    }
+    document.addEventListener('DOMContentLoaded',render);
+  </script>
+</body>
+</html>
