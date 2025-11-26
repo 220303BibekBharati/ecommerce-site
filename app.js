@@ -216,8 +216,7 @@ function mirrorUserToSupabase(user) {
 
 function mirrorOrderToSupabase(order) {
   if (!order) return;
-  supabaseInsert('orders', {
-    user_id: order.userId || null,
+  const payload = {
     user_email: order.userEmail || null,
     items: order.items || [],
     subtotal: order.subtotal || 0,
@@ -227,7 +226,16 @@ function mirrorOrderToSupabase(order) {
     created_at: order.createdAt || new Date().toISOString(),
     customer: order.customer || {},
     payment: order.payment || {},
-  });
+  };
+
+  // In your schema, orders.user_id is NOT NULL with a default gen_random_uuid().
+  // If there is a logged-in user, send their id; otherwise omit user_id entirely
+  // so Supabase can use its default value instead of receiving null.
+  if (order.userId) {
+    payload.user_id = order.userId;
+  }
+
+  supabaseInsert('orders', payload);
 }
 
 // UI element references
