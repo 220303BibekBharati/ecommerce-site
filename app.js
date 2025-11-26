@@ -352,6 +352,7 @@ function renderOffers() {
 function updateCartCount() {
   const cart = getCart();
   const count = cart.reduce((sum, item) => sum + item.qty, 0);
+  if (!cartCountEl) return;
   cartCountEl.textContent = String(count);
 }
 
@@ -678,6 +679,9 @@ function placeOrder() {
     setCheckoutStep('cart');
     return;
   }
+  const currentUser = getCurrentUser();
+  const emailFromShipping = (shippingFormState && shippingFormState.email) || null;
+  const userEmail = currentUser ? currentUser.email : emailFromShipping;
   const order = {
     id: `ORD-${Date.now().toString(36).toUpperCase()}`,
     items: lines.map((l) => ({
@@ -693,6 +697,8 @@ function placeOrder() {
     createdAt: new Date().toISOString(),
     customer: shippingFormState,
     payment: paymentFormState,
+    userEmail,
+    userId: currentUser ? currentUser.id : null,
   };
 
   const orders = getOrders();
@@ -725,12 +731,21 @@ function statusClass(status) {
 
 function renderOrderHistory() {
   const orders = getOrders();
-  if (!orders.length) {
-    orderListRoot.innerHTML = '<p class="text-muted">No orders yet. Your future purchases will appear here.</p>';
+  const currentUser = getCurrentUser();
+  const scoped = currentUser
+    ? orders.filter((o) =>
+        o.userEmail === currentUser.email ||
+        o.userId === currentUser.id ||
+        (o.customer && o.customer.email && o.customer.email === currentUser.email)
+      )
+    : [];
+
+  if (!scoped.length) {
+    orderListRoot.innerHTML = '<p class="text-muted">No orders for this account yet. Place an order and it will appear here.</p>';
     return;
   }
 
-  orderListRoot.innerHTML = orders
+  orderListRoot.innerHTML = scoped
     .map((o) => {
       const date = new Date(o.createdAt).toLocaleString();
       const itemsLabel = `${o.items.length} item${o.items.length > 1 ? 's' : ''}`;

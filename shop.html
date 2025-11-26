@@ -201,7 +201,7 @@
       <li><a href="cart.html" class="menu-item-btn">My Cart<span>🛒</span></a></li>
       <li><a href="my-orders.html" class="menu-item-btn">My Orders<span>📦</span></a></li>
       <li><a href="orders.html" class="menu-item-btn">Orders<span>📋</span></a></li>
-      <li><button type="button" class="menu-item-btn" id="menu-logout-btn">Sign out<span>↪</span></button></li>
+      <li><button type="button" class="menu-item-btn" id="menu-signout-btn">Sign out<span>↪</span></button></li>
     </ul>
   </div>
 
@@ -227,11 +227,15 @@
       document.addEventListener('click', function (e) {
         if (!dd.contains(e.target) && e.target !== btn) setState(false);
       });
-      var logoutBtn = document.getElementById('menu-logout-btn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function () {
+      var signoutBtn = document.getElementById('menu-signout-btn');
+      if (signoutBtn) {
+        signoutBtn.addEventListener('click', function () {
+          // Clear current user and open login/register panel
           try { localStorage.removeItem('currentUser'); } catch (e) {}
           setState(false);
+          if (typeof renderAuthModal === 'function') {
+            renderAuthModal('login');
+          }
         });
       }
     });

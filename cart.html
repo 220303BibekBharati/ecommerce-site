@@ -12,7 +12,7 @@
       <header class="panel-header">
         <div>
           <div class="section-title">My Cart</div>
-          <div class="section-subtitle">Items currently in your cart.</div>
+          <div class="section-subtitle">Review items in your cart before checking out.</div>
         </div>
         <a href="shop.html" class="nav-link">← Back to shop</a>
       </header>
@@ -27,22 +27,39 @@
     function formatPrice(v){return '$' + v.toFixed(2);}    
     function getCart(){try{const r=localStorage.getItem(CART_KEY);return r?JSON.parse(r):[]}catch{return []}}    
     function getProducts(){try{const r=localStorage.getItem(PRODUCT_KEY);return r?JSON.parse(r):[]}catch{return []}}    
-    function render(){
-      const root=document.getElementById('cart-view');
+    function computeCart(){
       const cart=getCart();
       const products=getProducts();
-      if(!cart.length){root.innerHTML='<p class="text-muted">Your cart is empty.</p>';return;}
-      let subtotal=0;
       const lines=cart.map(item=>{
         const p=products.find(pr=>pr.id===item.productId);
-        if(!p)return '';
-        const total=p.price*item.qty;subtotal+=total;
-        return `<div class="cart-row"><span>${item.qty} × ${p.name}</span><span>${formatPrice(total)}</span></div>`;
+        return {item,product:p,lineTotal:p?p.price*item.qty:0};
+      });
+      const subtotal=lines.reduce((s,l)=>s+l.lineTotal,0);
+      const shipping=subtotal>0&&subtotal<75?7:0;
+      const total=subtotal+shipping;
+      return {cart,lines,subtotal,shipping,total};
+    }
+    function render(){
+      const root=document.getElementById('cart-view');
+      const {cart,lines,subtotal,shipping,total}=computeCart();
+      if(!cart.length){root.innerHTML='<p class="text-muted">Your cart is empty.</p>';return;}
+      const itemsHtml=lines.map(l=>{
+        if(!l.product)return '';
+        return `<div class="cart-row">
+          <span>${l.item.qty} × ${l.product.name}</span>
+          <span>${formatPrice(l.lineTotal)}</span>
+        </div>`;
       }).join('');
       root.innerHTML=`
         <div class="cart-summary">
-          ${lines}
-          <div class="cart-row cart-total"><span>Subtotal</span><span>${formatPrice(subtotal)}</span></div>
+          ${itemsHtml}
+          <div class="cart-row"><span>Subtotal</span><span>${formatPrice(subtotal)}</span></div>
+          <div class="cart-row"><span>Shipping</span><span>${shipping?formatPrice(shipping):'Free'}</span></div>
+          <div class="cart-row cart-total"><span>Total</span><span>${formatPrice(total)}</span></div>
+          <div style="margin-top:0.8rem; display:flex; gap:0.5rem; flex-wrap:wrap;">
+            <a href="shop.html#orders" class="btn-solid">Go to checkout</a>
+            <a href="shop.html#catalog" class="btn-ghost">Continue shopping</a>
+          </div>
         </div>`;
     }
     document.addEventListener('DOMContentLoaded',render);

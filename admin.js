@@ -371,6 +371,9 @@ function viewOrderDetail(orderId) {
       </div>
       <div style="margin-top:0.7rem; font-size:0.78rem;" class="text-muted">
         <div><strong>Customer:</strong> ${order.customer?.fullName || '—'}</div>
+        <div><strong>Address:</strong> ${order.customer?.address || '—'}, ${order.customer?.city || ''} ${
+    order.customer?.zip || ''
+  }</div>
         <div><strong>Contact:</strong> ${order.customer?.email || '—'} · ${order.customer?.phone || '—'}</div>
         <div><strong>Status:</strong> ${order.status}</div>
       </div>
