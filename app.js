@@ -228,12 +228,9 @@ function mirrorOrderToSupabase(order) {
     payment: order.payment || {},
   };
 
-  // In your schema, orders.user_id is NOT NULL with a default gen_random_uuid().
-  // If there is a logged-in user, send their id; otherwise omit user_id entirely
-  // so Supabase can use its default value instead of receiving null.
-  if (order.userId) {
-    payload.user_id = order.userId;
-  }
+  // Do not send user_id from the frontend (local user ids are not UUIDs).
+  // Let Supabase use its default gen_random_uuid() for orders.user_id and
+  // associate orders with customers via user_email instead.
 
   supabaseInsert('orders', payload);
 }
