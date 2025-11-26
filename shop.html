@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovaCommerce – Modern E‑commerce Experience</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <!-- Top Navigation -->
+    <header class="top-nav">
+      <div class="top-nav-inner">
+        <a href="#top" class="brand-mark">
+          <div class="brand-logo"></div>
+          <div class="brand-text">
+            <span class="brand-title">NovaCommerce</span>
+            <span class="brand-subtitle">Curated digital storefront</span>
+          </div>
+        </a>
+
+        <nav class="nav-links">
+          <a href="#catalog" class="nav-link active">Shop</a>
+          <a href="#offers" class="nav-link">Offers</a>
+          <a href="#orders" class="nav-link">Orders</a>
+        </nav>
+
+        <div class="nav-actions">
+          <button type="button" class="pill-btn" id="view-orders-btn">
+            <span class="badge-dot"></span>
+            <span>Order history</span>
+          </button>
+          <button type="button" class="pill-btn" id="account-btn">
+            <span id="account-label">Sign in</span>
+          </button>
+          <button type="button" class="pill-btn pill-btn-primary" id="cart-toggle-btn">
+            <span class="cart-indicator">
+              <span>Cart</span>
+              <span class="cart-count" id="cart-count">0</span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-container" id="top">
+      <!-- Hero -->
+      <section class="hero animate-in" id="hero">
+        <div class="hero-copy">
+          <h1>
+            Elevate your everyday with
+            <span class="hero-highlight">vibrant essentials</span>.
+          </h1>
+          <p>
+            Discover curated gadgets, lifestyle picks, and workspace upgrades.
+            Free shipping over $75 and next‑day dispatch on select items.
+          </p>
+          <div class="hero-cta">
+            <button type="button" class="pill-btn pill-btn-primary" id="hero-shop-btn">
+              Start shopping
+            </button>
+            <button type="button" class="pill-btn" id="hero-offers-btn">
+              View today’s offers
+            </button>
+          </div>
+          <div class="hero-metadata">
+            <span><span class="badge-dot"></span> Live inventory synced</span>
+            <span>4.9★ average customer rating</span>
+            <span>Secure checkout – Credit card &amp; COD</span>
+          </div>
+        </div>
+
+        <aside class="hero-visual">
+          <div class="hero-card">
+            <div class="hero-card-grid" id="featured-products">
+              <!-- Filled by JS with featured products -->
+            </div>
+            <div class="hero-floating-tag">
+              <span class="hero-floating-tag-dot"></span>
+              <span>Real‑time order updates</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <!-- Filters & Catalog -->
+      <section id="catalog" class="animate-in" style="margin-top: 1.6rem;">
+        <div class="filters-row">
+          <div>
+            <div class="section-title">Browse collection</div>
+            <div class="section-subtitle">Filter by category, budget, and keywords.</div>
+          </div>
+          <div class="filter-controls">
+            <div class="input-shell">
+              <input type="search" id="search-input" placeholder="Search products" aria-label="Search products" />
+            </div>
+            <div class="input-shell">
+              <span class="text-muted" style="font-size: 0.75rem;">Max</span>
+              <input type="number" id="max-price-input" placeholder="Price" min="0" />
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-chips" id="category-chips" style="margin-top: 0.9rem;">
+          <!-- Category chips injected via JS -->
+        </div>
+
+        <div class="panel" style="margin-top: 0.9rem;">
+          <div class="panel-header">
+            <div>
+              <div class="section-title">Products</div>
+              <div class="section-subtitle" id="catalog-subtitle">Handpicked items for every workflow.</div>
+            </div>
+            <div class="section-subtitle" id="catalog-stats"></div>
+          </div>
+          <div class="products-grid" id="products-grid">
+            <!-- Fallback static products (will be replaced by JS when available) -->
+            <article class="product-card">
+              <div class="product-media">
+                <div class="product-img-placeholder">Audio</div>
+              </div>
+              <div class="product-body">
+                <div class="product-title">Aurora Wireless Headphones</div>
+                <div class="product-meta">
+                  <span>Stock: 18</span>
+                  <span class="product-price">$129.00</span>
+                </div>
+              </div>
+            </article>
+            <article class="product-card">
+              <div class="product-media">
+                <div class="product-img-placeholder">Workspace</div>
+              </div>
+              <div class="product-body">
+                <div class="product-title">Luma Mechanical Keyboard</div>
+                <div class="product-meta">
+                  <span>Stock: 12</span>
+                  <span class="product-price">$159.00</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Special Offers -->
+      <section id="offers" class="animate-in" style="margin-top: 1.8rem;">
+        <div class="panel">
+          <div class="panel-header">
+            <div>
+              <div class="section-title">Today’s special offers</div>
+              <div class="section-subtitle">Limited‑time bundles and seasonal deals.</div>
+            </div>
+          </div>
+          <div class="products-grid" id="offers-grid">
+            <!-- Offers populated by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Orders & Checkout Section -->
+      <section id="orders" class="animate-in" style="margin-top: 1.8rem;">
+        <div class="layout-main">
+          <!-- Checkout panel -->
+          <div class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="section-title">Checkout</div>
+                <div class="section-subtitle">Complete your order in a few guided steps.</div>
+              </div>
+            </div>
+
+            <div class="checkout-steps" id="checkout-steps">
+              <div class="step-pill active" data-step="cart">1. Cart</div>
+              <div class="step-pill" data-step="shipping">2. Shipping</div>
+              <div class="step-pill" data-step="payment">3. Payment</div>
+              <div class="step-pill" data-step="confirm">4. Confirm</div>
+            </div>
+
+            <div class="checkout-body" id="checkout-body">
+              <!-- Dynamic content controlled by JS -->
+            </div>
+          </div>
+
+          <!-- Order history panel -->
+          <aside class="panel">
+            <div class="panel-header">
+              <div>
+                <div class="section-title">Order history</div>
+                <div class="section-subtitle">Track status and review previous purchases.</div>
+              </div>
+            </div>
+
+            <div class="order-list" id="order-list">
+              <!-- Orders injected via JS -->
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Product Detail Modal -->
+  <div id="product-modal-root" style="display: none;"></div>
+
+  <!-- Auth Modal -->
+  <div id="auth-modal-root" style="display:none;"></div>
+
+  <!-- Toasts -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+

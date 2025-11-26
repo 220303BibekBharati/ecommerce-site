@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovaCommerce Admin Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <div class="admin-layout" id="admin-app">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar">
+        <div class="brand-mark" style="margin-bottom:1.1rem;">
+          <div class="brand-logo"></div>
+          <div class="brand-text">
+            <span class="brand-title">NovaCommerce</span>
+            <span class="brand-subtitle">Admin console</span>
+          </div>
+        </div>
+        <nav style="display:flex; flex-direction:column; gap:0.4rem; font-size:0.8rem;">
+          <button type="button" class="nav-link active" data-admin-view="overview">Overview</button>
+          <button type="button" class="nav-link" data-admin-view="orders">Orders</button>
+          <button type="button" class="nav-link" data-admin-view="products">Products</button>
+          <button type="button" class="nav-link" data-admin-view="users">Users</button>
+        </nav>
+        <div style="margin-top:auto; font-size:0.75rem; color:var(--color-muted);">
+          <p>Signed in as <span id="admin-identity">—</span></p>
+          <button type="button" class="pill-btn" id="admin-logout" style="margin-top:0.6rem; width:100%; justify-content:center;">Log out</button>
+        </div>
+      </aside>
+
+      <!-- Main area with login gate -->
+      <main class="admin-main">
+        <section id="admin-login-section" style="max-width:420px; margin:3.5rem auto; display:none;">
+          <div class="panel animate-in">
+            <div class="panel-header">
+              <div>
+                <div class="section-title">Admin login</div>
+                <div class="section-subtitle">Restricted area – NovaCommerce staff only.</div>
+              </div>
+            </div>
+            <form id="admin-login-form" class="checkout-body">
+              <div class="form-field">
+                <label class="form-label">Email</label>
+                <input class="form-input" type="email" name="email" required value="admin@example.com" />
+              </div>
+              <div class="form-field" style="margin-top:0.4rem;">
+                <label class="form-label">Password</label>
+                <input class="form-input" type="password" name="password" required value="admin123" />
+              </div>
+              <div class="form-error" id="admin-login-error"></div>
+              <div style="margin-top:0.8rem; display:flex; gap:0.5rem;">
+                <button type="submit" class="btn-solid">Sign in</button>
+                <button type="button" class="btn-ghost" id="admin-login-demo">Use demo account</button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section id="admin-main-section" style="display:none;">
+          <!-- Overview -->
+          <section id="admin-overview" class="admin-section animate-in">
+            <header>
+              <h1 class="section-title">Dashboard overview</h1>
+              <p class="section-subtitle">Live metrics based on current orders and products.</p>
+            </header>
+            <div class="metric-grid" id="metric-grid"></div>
+          </section>
+
+          <!-- Orders -->
+          <section id="admin-orders" class="admin-section" style="display:none;">
+            <header>
+              <h2 class="section-title">Orders</h2>
+              <p class="section-subtitle">Search, filter, and process orders in real time.</p>
+            </header>
+            <div class="admin-toolbar">
+              <div class="input-shell">
+                <input type="search" id="order-search" placeholder="Search by ID or customer" />
+              </div>
+              <div style="display:flex; gap:0.5rem; align-items:center;">
+                <select class="form-select" id="order-status-filter" style="max-width:150px;">
+                  <option value="all">All statuses</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Shipped">Shipped</option>
+                  <option value="Delivered">Delivered</option>
+                  <option value="Canceled">Canceled</option>
+                </select>
+                <button type="button" class="btn-ghost" id="orders-refresh">Refresh</button>
+                <button type="button" class="btn-solid" id="orders-export">Export CSV</button>
+              </div>
+            </div>
+            <div class="table-shell">
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th><input type="checkbox" id="select-all-orders" /></th>
+                      <th>Order</th>
+                      <th>Customer</th>
+                      <th>Total</th>
+                      <th>Status</th>
+                      <th>Placed</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="orders-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div style="margin-top:0.6rem; display:flex; gap:0.5rem;">
+              <select class="form-select" id="bulk-status-select" style="max-width:170px;">
+                <option value="Processing">Mark as Processing</option>
+                <option value="Shipped">Mark as Shipped</option>
+                <option value="Delivered">Mark as Delivered</option>
+                <option value="Canceled">Mark as Canceled</option>
+              </select>
+              <button type="button" class="btn-solid" id="bulk-apply">Apply to selected</button>
+            </div>
+          </section>
+
+          <!-- Products -->
+          <section id="admin-products" class="admin-section" style="display:none;">
+            <header>
+              <h2 class="section-title">Products</h2>
+              <p class="section-subtitle">Manage inventory, pricing, and categories.</p>
+            </header>
+            <div class="admin-toolbar">
+              <div class="input-shell">
+                <input type="search" id="product-search" placeholder="Search products" />
+              </div>
+              <button type="button" class="btn-solid" id="product-new">Add product</button>
+            </div>
+            <div class="table-shell" style="margin-top:0.8rem;">
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Category</th>
+                      <th>Price</th>
+                      <th>Inventory</th>
+                      <th>Featured</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="products-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- Users -->
+          <section id="admin-users" class="admin-section" style="display:none;">
+            <header>
+              <h2 class="section-title">Users</h2>
+              <p class="section-subtitle">Registered customer accounts (from login & shop).</p>
+            </header>
+            <div class="table-shell" style="margin-top:0.8rem;">
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Registered at</th>
+                    </tr>
+                  </thead>
+                  <tbody id="users-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <!-- Toasts -->
+    <div class="toast-container" id="admin-toast-container"></div>
+  </div>
+
+  <!-- Modal root reused for product/order editing -->
+  <div id="admin-modal-root" style="display:none;"></div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
