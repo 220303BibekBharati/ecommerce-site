@@ -125,6 +125,9 @@ function getCurrentUser() {
 function setCurrentUser(user) {
   if (!user) localStorage.removeItem(CURRENT_USER_KEY);
   else localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+  if (typeof window !== 'undefined' && typeof window.syncMenuAuthLabel === 'function') {
+    window.syncMenuAuthLabel();
+  }
 }
 
 function ensureAdminSeedUser() {

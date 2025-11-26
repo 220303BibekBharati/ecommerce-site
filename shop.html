@@ -247,6 +247,7 @@
           authLabelEl.textContent = hasCurrentUser() ? 'Sign out' : 'Sign in / Register';
         }
         syncMenuAuthLabel();
+        window.syncMenuAuthLabel = syncMenuAuthLabel;
 
         signoutBtn.addEventListener('click', function () {
           if (hasCurrentUser()) {
