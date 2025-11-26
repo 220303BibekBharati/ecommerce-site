@@ -5,6 +5,11 @@ const ORDERS_STORAGE_KEY = 'ecom_orders';
 const ADMIN_SESSION_KEY = 'ecom_admin_session';
 const USERS_STORAGE_KEY = 'users';
 
+// Supabase configuration (shared backend for users & orders)
+const SUPABASE_URL = 'https://hmbyzvsvwqivlbuqgzrd.supabase.co';
+const SUPABASE_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtYnl6dnN2d3FpdmxidXFnenJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNTI2MzYsImV4cCI6MjA3OTcyODYzNn0.xz46HZHqP8PeDqLFsBEV7w7D0KbqGLIJyHGA_XdRcFM';
+
 // Root elements
 const loginSection = document.getElementById('admin-login-section');
 const mainSection = document.getElementById('admin-main-section');
@@ -96,6 +101,52 @@ function setAdminSession(session) {
 }
 
 // ---------------------------------------------------------
+// Supabase helpers (load users & orders into local storage)
+// ---------------------------------------------------------
+
+async function supabaseSelect(table) {
+  try {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return [];
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=*`, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    });
+    if (!res.ok) {
+      console.error('Supabase select failed', table, await res.text());
+      return [];
+    }
+    return await res.json();
+  } catch (e) {
+    console.error('Supabase select error', table, e);
+    return [];
+  }
+}
+
+async function reloadOrdersFromSupabase() {
+  const data = await supabaseSelect('orders');
+  if (!Array.isArray(data)) return;
+  setOrders(data);
+  renderOrdersTable();
+  renderOverview();
+  toast('Orders synced from server');
+}
+
+async function reloadUsersFromSupabase() {
+  const data = await supabaseSelect('users');
+  if (!Array.isArray(data)) return;
+  try {
+    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(data));
+  } catch (e) {
+    console.error('Failed to cache users locally', e);
+  }
+  if (document.getElementById('admin-users')?.style.display !== 'none') {
+    renderUsersTable();
+  }
+}
+
+// ---------------------------------------------------------
 // Utilities
 // ---------------------------------------------------------
 
@@ -160,6 +211,9 @@ function showAdminMain(session) {
   adminIdentityEl.textContent = session?.email || 'admin@example.com';
   renderOverview();
   renderOrdersTable();
+  // Load latest data from shared backend
+  reloadOrdersFromSupabase();
+  reloadUsersFromSupabase();
   renderProductsTable();
 }
 
@@ -456,9 +510,7 @@ function wireOrders() {
   });
 
   ordersRefreshBtn.addEventListener('click', () => {
-    renderOrdersTable();
-    renderOverview();
-    toast('Orders refreshed');
+    reloadOrdersFromSupabase();
   });
 
   ordersExportBtn.addEventListener('click', exportOrdersCsv);

@@ -7,6 +7,11 @@ const ORDERS_STORAGE_KEY = 'ecom_orders';
 const USERS_STORAGE_KEY = 'users';
 const CURRENT_USER_KEY = 'currentUser';
 
+// Supabase configuration (shared backend for users & orders)
+const SUPABASE_URL = 'https://hmbyzvsvwqivlbuqgzrd.supabase.co';
+const SUPABASE_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhtYnl6dnN2d3FpdmxidXFnenJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxNTI2MzYsImV4cCI6MjA3OTcyODYzNn0.xz46HZHqP8PeDqLFsBEV7w7D0KbqGLIJyHGA_XdRcFM';
+
 const defaultProducts = [
   {
     id: 'p1',
@@ -171,6 +176,58 @@ function getOrders() {
 
 function setOrders(orders) {
   localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+}
+
+// ---------------------------------------------------------
+// Supabase helpers (mirror users & orders to shared backend)
+// ---------------------------------------------------------
+
+async function supabaseInsert(table, payload) {
+  try {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      // Non-blocking: log but don't break UX
+      console.error('Supabase insert failed', table, await res.text());
+    }
+  } catch (e) {
+    console.error('Supabase insert error', table, e);
+  }
+}
+
+function mirrorUserToSupabase(user) {
+  if (!user || !user.email) return;
+  supabaseInsert('users', {
+    name: user.name || null,
+    email: user.email,
+    password: user.password || null,
+    registered_at: user.registeredAt || new Date().toISOString(),
+  });
+}
+
+function mirrorOrderToSupabase(order) {
+  if (!order) return;
+  supabaseInsert('orders', {
+    user_id: order.userId || null,
+    user_email: order.userEmail || null,
+    items: order.items || [],
+    subtotal: order.subtotal || 0,
+    shipping: order.shipping || 0,
+    total: order.total || 0,
+    status: order.status || 'Pending',
+    created_at: order.createdAt || new Date().toISOString(),
+    customer: order.customer || {},
+    payment: order.payment || {},
+  });
 }
 
 // UI element references
@@ -708,6 +765,9 @@ function placeOrder() {
   orders.unshift(order);
   setOrders(orders);
 
+  // Mirror to shared backend so admin & other devices can see this order
+  mirrorOrderToSupabase(order);
+
   // Clear cart
   setCart([]);
   updateCartCount();
@@ -965,6 +1025,7 @@ function renderAuthModal(mode = 'login') {
       setUsers(users);
       setCurrentUser(newUser);
       updateAccountLabel();
+      mirrorUserToSupabase(newUser);
       showToast('Account created and signed in');
       close();
     };
