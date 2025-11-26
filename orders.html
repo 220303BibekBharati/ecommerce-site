@@ -34,8 +34,7 @@
       const user=getCurrentUser();
       const scoped=user?orders.filter(o=>
         o.userEmail===user.email||
-        o.userId===user.id||
-        (o.customer&&o.customer.email&&o.customer.email===user.email)
+        o.userId===user.id
       ):[];
       if(!scoped.length){root.innerHTML='<p class="text-muted">No orders for this account yet.</p>';return;}
       root.innerHTML=scoped.map(o=>{

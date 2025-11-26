@@ -735,8 +735,7 @@ function renderOrderHistory() {
   const scoped = currentUser
     ? orders.filter((o) =>
         o.userEmail === currentUser.email ||
-        o.userId === currentUser.id ||
-        (o.customer && o.customer.email && o.customer.email === currentUser.email)
+        o.userId === currentUser.id
       )
     : [];
 
