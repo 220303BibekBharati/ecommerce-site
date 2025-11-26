@@ -202,7 +202,11 @@
       <li><a href="cart.html" class="menu-item-btn">My Cart<span>🛒</span></a></li>
       <li><a href="my-orders.html" class="menu-item-btn">My Orders<span>📦</span></a></li>
       <li><a href="orders.html" class="menu-item-btn">Orders<span>📋</span></a></li>
-      <li><button type="button" class="menu-item-btn" id="menu-signout-btn">Sign out<span>↪</span></button></li>
+      <li>
+        <button type="button" class="menu-item-btn" id="menu-signout-btn">
+          <span class="menu-auth-label">Sign out</span><span>↪</span>
+        </button>
+      </li>
     </ul>
   </div>
 
@@ -230,12 +234,35 @@
       });
       var signoutBtn = document.getElementById('menu-signout-btn');
       if (signoutBtn) {
+        var authLabelEl = signoutBtn.querySelector('.menu-auth-label');
+        function hasCurrentUser() {
+          try {
+            return !!localStorage.getItem('currentUser');
+          } catch (e) {
+            return false;
+          }
+        }
+        function syncMenuAuthLabel() {
+          if (!authLabelEl) return;
+          authLabelEl.textContent = hasCurrentUser() ? 'Sign out' : 'Sign in / Register';
+        }
+        syncMenuAuthLabel();
+
         signoutBtn.addEventListener('click', function () {
-          // Clear current user and open login/register panel
-          try { localStorage.removeItem('currentUser'); } catch (e) {}
+          if (hasCurrentUser()) {
+            // Sign out, then show login
+            try { localStorage.removeItem('currentUser'); } catch (e) {}
+            syncMenuAuthLabel();
+          }
           setState(false);
           if (typeof renderAuthModal === 'function') {
             renderAuthModal('login');
+          }
+        });
+
+        window.addEventListener('storage', function (ev) {
+          if (ev.key === 'currentUser') {
+            syncMenuAuthLabel();
           }
         });
       }
